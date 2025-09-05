@@ -26,6 +26,8 @@ Despite extensive work on imbalanced classification, the reasons why certain dat
 
 ## Installation
 
+**NOTE**: Complexity metrics computations and GAMformer require GPU.
+
 1. **Install RAPIDS (cuML and CuPy):**  
    RAPIDS is recommended via conda for ease and compatibility. Use the [RAPIDS Release Selector](https://rapids.ai/start.html) to generate commands. Example for CUDA 12.0, Python 3.10:
 
@@ -34,12 +36,6 @@ Despite extensive work on imbalanced classification, the reasons why certain dat
    conda activate gamformer
    conda install -c rapidsai -c conda-forge -c nvidia rapids=24.08 cuda-version=12.0
    ```
-
-   - For pip (less recommended, requires matching CUDA toolkit):  
-     ```bash
-     pip install --extra-index-url=https://pypi.nvidia.com cuml-cu12==24.08.*
-     ```
-     Ensure CUDA toolkit 12.x is installed.
 
 2. **Install Remaining Dependencies** 
 
