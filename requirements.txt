@@ -1,0 +1,12 @@
+cuml==0.6.1.post1
+cupy_cuda12x==13.4.1
+interpret==0.6.10
+interpret_core==0.6.10
+matplotlib==3.6.3
+numpy==2.3.2
+pandas==2.3.2
+scikit_learn==1.7.1
+scipy==1.16.1
+seaborn==0.13.2
+torch==2.7.1
+xgboost==3.0.5
