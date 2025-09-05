@@ -45,20 +45,10 @@ Despite extensive work on imbalanced classification, the reasons why certain dat
 
     Then, install ticl as outlined in https://github.com/microsoft/ticl. Lastly, install remaining dependencies via:
 
-        ```bash
+    ```bash
     pip install --upgrade pip
     pip install -r requirements.txt
     ```
-
-## Project Structure
-
-domain_analyzer.py
-meta_dataset_extraction.py
-model_performance_Multiclass_analysis.py
-src/
-    metrics.py
-complexity_data/
-    # .npy files with complexity and Classification Difficulty data
 
 ## Usage
 
@@ -164,50 +154,5 @@ WIP
 ## License
 
 This project is licensed under the MIT License. 
-
-
-# GAMformer Analysis: Meta-Modeling for Dataset Complexity and Class Difficulty Prediction
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
-
-## Overview
-
-This repository provides an implementation of the **GAMformer Analysis** framework, a meta-modeling approach for assessing dataset complexity and predicting class difficulty (CD) in machine learning tasks. The framework leverages a Generalized Additive Model Transformer (GAMformer) as a meta-learner, trained on complexity features extracted from diverse datasets. It enables researchers to:
-
-- Compute a suite of complexity metrics for binary or multiclass classification datasets.
-- Predict class-wise difficulty using a pre-trained GAMformer meta-model.
-- Generate interpretable visualizations, including local explanations of feature contributions, class-wise complexity heatmaps, and 2D dataset projections.
-
-This tool is designed to facilitate meta-learning research in machine learning, particularly for understanding dataset hardness, imbalance, and separability. The methodology draws from advances in explainable AI and meta-feature engineering, making it suitable for applications in automated machine learning (AutoML), dataset selection, and model diagnostics.
-
-The core implementation is contained in `gamformer_analysis.py`, which encapsulates the entire workflow in a single class for ease of use.
-
-**Key Contributions:**
-- Integration of 12 established complexity metrics (e.g., F2, L1, N3, Bayes Imbalance Ratio) with one-vs-all decomposition for multiclass settings.
-- Use of GAMformer for interpretable meta-predictions, providing additive component breakdowns for transparency.
-- Support for both binary and multiclass datasets, with automated handling of high-dimensional data via t-SNE projections.
-- Example workflows using synthetic datasets to demonstrate applicability in controlled experiments.
-
-This framework has been refactored for clarity and efficiency as of September 2, 2025, building on initial development from June 18, 2024.
-
-## Installation
-
-### Dependencies
-
-The framework requires Python 3.8 or later and a CUDA-enabled GPU for metric computations (using cuML and CuPy). Key dependencies include:
-
-- NumPy (>=1.20)
-- cuML (from RAPIDS, for GPU-accelerated machine learning)
-- CuPy (included with RAPIDS)
-- Matplotlib (>=3.5)
-- Seaborn (>=0.11)
-- Scikit-learn (>=1.0)
-- PyTorch (for GAMformer; CUDA-enabled recommended)
-- `ticl` (custom package for GAMformerRegressor; install via `pip install ticl`)
-
-**GPU Requirements:** NVIDIA GPU with compute capability 7.0+ (Volta or higher). CUDA 12.x with compatible drivers (e.g., 525+). Supported platforms: Linux, WSL2 on Windows 11.
-
-### Installation Steps
 
 
