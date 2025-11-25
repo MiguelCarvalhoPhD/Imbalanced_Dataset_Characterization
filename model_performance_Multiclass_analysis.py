@@ -250,6 +250,9 @@ def main():
     gamformer_path = fetch_model(GAMFORMER_MODEL_STR)
     models = get_regression_models(gamformer_path)
     
+    EBM_runtime_all_features = []
+    GAMformer_runtime_all_features = []
+    
     for file_path in COMPLEXITY_FILES:
         file_name = os.path.basename(file_path)
         print(f"\n{'='*60}")
@@ -287,13 +290,26 @@ def main():
         #print mean runtimes for EBM and GAMformer per file
         for model_idx, model_name in enumerate(models.keys()):
             avg_runtime = np.mean(mean_runtimes_for_file[model_idx, :])
-            print(f"Average runtime for {model_name} on {file_name}: {avg_runtime:.4f} seconds")
+            print(f"Average runtime for {model_name} on {file_name}: {avg_runtime:.4f} seconds") 
             
         #print mean runtimes for EBM and GAMformer per file only for 'all' feature set
         for model_idx, model_name in enumerate(models.keys()):
             fs_idx = list(FEATURE_SETS.keys()).index('all')
             avg_runtime_all_fs = mean_runtimes_for_file[model_idx, fs_idx]
             print(f"Average runtime for {model_name} on {file_name} (all features): {avg_runtime_all_fs:.4f} seconds")
+            if model_name == "EBM":
+                EBM_runtime_all_features.append(avg_runtime_all_fs)
+            elif model_name == "GAMformer":
+                GAMformer_runtime_all_features.append(avg_runtime_all_fs)
+    
+    # Print overall average ratio in runtimes across all files for 'all' feature set
+    if EBM_runtime_all_features and GAMformer_runtime_all_features:
+        overall_EBM_avg = np.mean(EBM_runtime_all_features)
+        overall_GAMformer_avg = np.mean(GAMformer_runtime_all_features)
+        ratio = overall_EBM_avg / overall_GAMformer_avg if overall_GAMformer_avg != 0 else float('inf')
+        print(f"\nOverall average runtime for EBM (all features): {overall_EBM_avg:.4f} seconds")
+        print(f"Overall average runtime for GAMformer (all features): {overall_GAMformer_avg:.4f} seconds")
+        print(f"Average runtime ratio (EBM / GAMformer) across all files (all features): {ratio:.4f}")
 
     print("\nAnalysis complete for all files.")
 
