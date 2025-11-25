@@ -52,11 +52,7 @@ This project assumes a **GPU-enabled** Python environment with CUDA 12.x for RAP
    * `interpret`, `interpret_core` – Explainable Boosting Machine (EBM)
    * `torch`, `xgboost` (GPU-enabled) 
 
-3. Install additional meta-model dependency:
-
-   ```bash
-   pip install ticl
-   ```
+3. Install additional meta-model dependency via: https://github.com/microsoft/ticl/tree/main/ticl
 
    `domain_analyzer.py` and `model_performance_Multiclass_analysis.py` both rely on `ticl.prediction.GAMformerRegressor` and `ticl.utils.fetch_model` to load the GAMformer checkpoint.
 
@@ -70,12 +66,14 @@ This project assumes a **GPU-enabled** Python environment with CUDA 12.x for RAP
 * `meta_dataset_extraction.py` – Builds the **meta-dataset**: computes complexity metrics and CD across many multiclass datasets, using different decomposition strategies (OVO/OVA/closest). 
 * `model_performance_Multiclass_analysis.py` – Trains GAMformer and EBM regressors on the meta-dataset, evaluates them via cross-validation, and measures per-fold runtime. 
 * `correlation_runtime_analysis.py` – Compares approximation variants of the complexity measures against the exact version in terms of **Pearson correlation with CD** and **median runtime**, outputting a LaTeX table. 
+* `scr`contains the GPU-based implementation of the complexity metrics.
 * `requirements.txt` – Python dependencies. 
 * `LICENSE` – License for this repository (see file for details).
 
 The meta-data used by `domain_analyzer.py` and the regression scripts is expected in a `complexity_data/` directory, typically containing:
 
-* `complexity_n_OVA.npy` – meta-features (complexity measures)
+* `complexity_n_OVA.npy` – meta-features obtained via OVA (complexity measures)
+* `complexity_OVA1.x.npy`- meta-features obtained via closest-OVA with different g(C) functions
 * `CD.npy` – corresponding CD scores per dataset
 
 These are produced by running `meta_dataset_extraction.py`. 
@@ -266,6 +264,10 @@ sudo taskset -c 2 nice -n -15 "$(which conda)" run --live-stream --name gamforme
 Combining this command with fixed random seeds in `model_performance_Multiclass_analysis.py` ensures that **both predictive performance and runtime numbers are exactly reproducible** on the same hardware setup. 
 
 ---
+
+**Citation**
+
+WIP
 
 ## License
 
