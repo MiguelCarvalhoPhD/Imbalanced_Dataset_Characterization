@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+
+#%%
 """
 
 This script performs a regression analysis to predict classification difficulty
@@ -53,15 +55,16 @@ from ticl.utils import fetch_model
 
 # Paths and File Definitions
 RESULTS_DATA_PATH = os.getcwd()+'/complexity_data/'
-CD_FILE_PATH = os.path.join(RESULTS_DATA_PATH, 'CD_theoretical.npy')
+CD_FILE_PATH = os.path.join(RESULTS_DATA_PATH, 'CD.npy')
 
 # Dynamically find complexity files to process
-COMPLEXITY_FILES = [os.path.join(RESULTS_DATA_PATH, f) for f in os.listdir(RESULTS_DATA_PATH) if f.startswith('complexity_closest_OVA')]
-COMPLEXITY_FILES.append(os.path.join(RESULTS_DATA_PATH, "complexity_theoretical_cdOVA.npy"))
+COMPLEXITY_FILES = [os.path.join(RESULTS_DATA_PATH, f) for f in os.listdir(RESULTS_DATA_PATH) if f.startswith('complexity_OVA')]
+COMPLEXITY_FILES.append(os.path.join(RESULTS_DATA_PATH, "complexity_n_OVA.npy"))
+COMPLEXITY_FILES.sort()
 
 # Model and Cross-Validation Settings
-N_SPLITS_CV = 5
-RANDOM_STATE = 30
+N_SPLITS_CV = 10
+RANDOM_STATE =  0
 GAMFORMER_MODEL_STR = "baam_Daverage_l1e-05_maxnumclasses0_nsamples500_numfeatures10_yencoderlinear_05_08_2024_03_04_01_epoch_40.cpkt"
 
 # Feature Set Definitions for Experiments
@@ -123,8 +126,11 @@ def preprocess_complexity_data(
         aggregated_complexity = np.zeros(data_complexity.shape)
         for row in range(data_complexity.shape[0]):
             for metric_idx in range(data_complexity.shape[1]):
-                # This logic is adapted from the user-provided `complexity_preprocessing` function
-                aggregated_complexity[row, metric_idx] = agg_func(data_complexity[row, metric_idx][0])
+                
+                if not isinstance(data_complexity[row,metric_idx],int):
+                    aggregated_complexity[row, metric_idx] = agg_func(data_complexity[row, metric_idx][0])
+                else:
+                    aggregated_complexity[row, metric_idx] = data_complexity[row, metric_idx]
 
         # Substitute NaNs with zeros
         aggregated_complexity[np.isnan(aggregated_complexity)] = 0
@@ -144,7 +150,7 @@ def get_regression_models(gamformer_path: str) -> Dict[str, Callable]:
     """Returns a dictionary of regression models to be evaluated."""
     return {
         "GAMformer": GAMformerRegressor(device='cuda', path=gamformer_path),
-        "EBM": ExplainableBoostingRegressor(max_bins=64, random_state=RANDOM_STATE)
+        "EBM": ExplainableBoostingRegressor(max_bins=64,interactions=0, random_state=RANDOM_STATE)
     }
 
 def run_regression_experiment(
@@ -277,9 +283,21 @@ def main():
         print(f"\n--- Average Runtimes for {file_name} (seconds) ---")
         runtime_df = pd.DataFrame(mean_runtimes_for_file.T, index=list(FEATURE_SETS.keys()), columns=list(models.keys()))
         print(runtime_df.to_string())
+        
+        #print mean runtimes for EBM and GAMformer per file
+        for model_idx, model_name in enumerate(models.keys()):
+            avg_runtime = np.mean(mean_runtimes_for_file[model_idx, :])
+            print(f"Average runtime for {model_name} on {file_name}: {avg_runtime:.4f} seconds")
+            
+        #print mean runtimes for EBM and GAMformer per file only for 'all' feature set
+        for model_idx, model_name in enumerate(models.keys()):
+            fs_idx = list(FEATURE_SETS.keys()).index('all')
+            avg_runtime_all_fs = mean_runtimes_for_file[model_idx, fs_idx]
+            print(f"Average runtime for {model_name} on {file_name} (all features): {avg_runtime_all_fs:.4f} seconds")
 
     print("\nAnalysis complete for all files.")
 
 
 if __name__ == '__main__':
     main()
+

@@ -354,8 +354,8 @@ class GAMformerAnalysis:
 if __name__ == "__main__":  # pragma: no cover - example
     # Default dataset and model paths (edit to suit your local paths)
     results_dir = Path.cwd() / "complexity_data"
-    cd_file_multiclass = results_dir / "CD_theoretical.npy"
-    complexity_file_multiclass = results_dir / "complexity_theoretical_cdOVA.npy"
+    cd_file_multiclass = results_dir / "CD.npy"
+    complexity_file_multiclass = results_dir / "complexity_n_OVA.npy"
     cd_file_binary = results_dir / "data_cd_binary.npy"
     complexity_file_binary = results_dir / "data_complexity_binary.npy"
 

@@ -194,6 +194,67 @@ def one_vs_all_decomposition(metric: Callable, X: np.ndarray, y: np.ndarray) -> 
 
     return results, n_classes, imbalance_ratio
 
+def OnevsALL_closest(metric, data, target):
+
+    """
+    Objectives:
+        . compute distance matrix between class centers
+        . iterate over each class and: 1 - determine the x closest classes, 2 - form data subset, 3 - transform target variable
+        . Store all values of each combination
+    """
+
+    #matrix to save results
+    results = []
+
+    # compute class centers
+    classes = sorted(set(target))
+    class_centers = [np.mean(data[target == classe, :], axis=0) for classe in classes]
+
+    # flatten the class_centers array for correct pairwise distance computation
+    class_centers = np.array(class_centers).reshape(len(classes), -1)
+
+    # compute pairwise distance
+    pairwise_distances = distance_matrix(class_centers, class_centers)
+    np.fill_diagonal(pairwise_distances,10**10)
+
+    # iterate over every class and select the closest x classes
+    for i, classe in enumerate(classes):
+
+        # determine relevant classes by some given function
+        #n_relevant_classes = int(np.round(len(classes)**(1/1.5)))
+        n_relevant_classes = int(np.sqrt(len(classes)))
+        #n_relevant_classes = int(len(classes)/2)
+
+        # select closest classes to the current class
+        closest_classes = np.argpartition(pairwise_distances[i, :], n_relevant_classes)[:n_relevant_classes]
+
+        #add current class
+        closest_classes = np.append(closest_classes,classe)
+
+        # create data subset with closest classes
+        data_new, y_new = data[np.isin(target, closest_classes),:], target[np.isin(target, closest_classes)]
+
+        #readjust ylabel to a binary classification problem
+        y_new = np.where(y_new!=classe, 0, 1)
+
+        #regular OnevsAll code
+        print(f'Analysing decomposition {i}/{len(classes)}, percentage of data: {len(y_new)/len(target)}')
+
+        #compute metric
+        complexity = metric(data_new,y_new)
+
+        #save results
+        if isinstance(complexity,float):
+            results.append(complexity)
+
+        elif len(complexity) == 3:
+            results.append(complexity[-2])
+
+        num_classes = 0
+        imb_ratio = 0
+    
+    return results, num_classes, imb_ratio
+
 def one_vs_one_decomposition(metric: Callable, X: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     Computes a complexity metric for all One-vs-One (OVO) binary subproblems.
